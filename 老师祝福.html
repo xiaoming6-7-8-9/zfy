@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>毕业答题送祝福</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        body {
+            background: #f0f7ff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,80,180,0.15);
+            padding: 40px 30px;
+            text-align: center;
+        }
+        h1 {
+            color: #224b9c;
+            margin-bottom: 40px;
+            font-size: 26px;
+        }
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .teacher-btn {
+            padding: 18px 10px;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            color: white;
+        }
+        .lu { background: #3498db; }
+        .zhao { background: #e67e22; }
+        .zhang { background: #27ae60; }
+        .yao { background: #9b59b6; }
+        .teacher-btn:hover {
+            opacity: 0.85;
+            transform: translateY(-3px);
+        }
+        /* 答题页面 */
+        .question-box {
+            display: none;
+        }
+        .question-title {
+            font-size: 20px;
+            color: #333;
+            margin: 20px 0;
+            line-height: 1.6;
+            text-align: left;
+        }
+        #answerInput {
+            width: 100%;
+            padding: 14px;
+            font-size: 17px;
+            border: 2px solid #dde4f0;
+            border-radius: 10px;
+            margin: 15px 0 25px;
+            outline: none;
+        }
+        #answerInput:focus {
+            border-color: #3498db;
+        }
+        .submit-btn, .back-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 0 8px;
+        }
+        .submit-btn {
+            background: #224b9c;
+            color: white;
+        }
+        .back-btn {
+            background: #aaa;
+            color: white;
+        }
+        /* 祝福语页面 */
+        .bless-box {
+            display: none;
+            text-align: left;
+            line-height: 2;
+            font-size: 17px;
+            white-space: pre-wrap;
+            color: #222;
+        }
+        .back-home {
+            margin-top: 35px;
+            padding: 12px 35px;
+            background: #224b9c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 首页：教师选择按钮 -->
+        <div class="home-box">
+            <h1>答题送给老师毕业祝福</h1>
+            <div class="btn-group">
+                <button class="teacher-btn lu" onclick="showQuestion('lu')">路老师（科学）</button>
+                <button class="teacher-btn zhao" onclick="showQuestion('zhao')">赵老师（青岛数学）</button>
+                <button class="teacher-btn zhang" onclick="showQuestion('zhang')">张老师（英语）</button>
+                <button class="teacher-btn yao" onclick="showQuestion('yao')">姚老师（语文）</button>
+            </div>
+        </div>
+
+        <!-- 答题区域 -->
+        <div class="question-box">
+            <h2 id="qTeacherName"></h2>
+            <div class="question-title" id="qContent"></div>
+            <input type="text" id="answerInput" placeholder="请输入你的答案">
+            <div>
+                <button class="submit-btn" onclick="checkAnswer()">提交答案</button>
+                <button class="back-btn" onclick="backHome()">返回首页</button>
+            </div>
+        </div>
+
+        <!-- 祝福语展示区域 -->
+        <div class="bless-box" id="blessText"></div>
+        <button class="back-home" id="blessBackBtn" style="display:none" onclick="backHome()">返回首页</button>
+    </div>
+
+    <script>
+        // 题库配置：老师ID、题目、标准答案、毕业祝福语
+        const questionData = {
+            lu: {
+                name: "路老师（科学）",
+                question: "六年级下册科学：我们太阳系中最大的行星是哪一颗？",
+                answer: "木星",
+                bless: `亲爱的路老师：
+你好！
+
+六年科学课堂，您带我探索宇宙星辰、万物奥秘，教会我观察自然、理性思考。马上小学毕业，我永远记得您生动有趣的实验课。愿您工作顺遂，平安喜乐，桃李芬芳！
+
+——宋海歌`
+            },
+            zhao: {
+                name: "赵老师（青岛版数学）",
+                question: "青岛版六年级下册数学：圆柱体积计算公式用字母表示是什么？",
+                answer: "V=Sh",
+                bless: `亲爱的赵老师：
+你好！
+
+感谢您六年耐心讲解数学难题，一道道公式、一次次演算，为我理清逻辑。毕业之际，祝您事事顺心，课堂常伴欢笑，培育更多优秀学子！
+
+——宋海歌`
+            },
+            zhang: {
+                name: "张老师（英语）",
+                question: "六年级下册英语：写出英文单词“毕业”",
+                answer: "graduate",
+                bless: `亲爱的张老师：
+你好！
+
+是您带我认识字母、朗读单词，打开看世界的英语窗口。即将告别小学，祝您日日轻松，笑容常在，岁岁皆安康！
+
+——宋海歌`
+            },
+            yao: {
+                name: "姚老师（语文）",
+                question: "六年级下册语文：《匆匆》的作者是谁？",
+                answer: "朱自清",
+                bless: `亲爱的姚老师：
+你好！
+
+笔墨书香伴我六年，您教我识字读书、书写真情。毕业不舍师恩，愿您四季无忧，文思常在，岁岁平安顺遂！
+
+——宋海歌`
+            }
+        };
+
+        let currentTeacher = "";
+
+        // 显示题目页面
+        function showQuestion(teacherId) {
+            currentTeacher = teacherId;
+            // 切换页面显示
+            document.querySelector(".home-box").style.display = "none";
+            document.querySelector(".question-box").style.display = "block";
+            document.querySelector(".bless-box").style.display = "none";
+            document.getElementById("blessBackBtn").style.display = "none";
+
+            // 填充题目信息
+            const data = questionData[teacherId];
+            document.getElementById("qTeacherName").innerText = data.name;
+            document.getElementById("qContent").innerText = data.question;
+            document.getElementById("answerInput").value = "";
+        }
+
+        // 核对答案
+        function checkAnswer() {
+            const userAns = document.getElementById("answerInput").value.trim();
+            const rightAns = questionData[currentTeacher].answer;
+            if (userAns === rightAns) {
+                // 答对：展示祝福语
+                document.querySelector(".question-box").style.display = "none";
+                document.querySelector(".bless-box").style.display = "block";
+                document.getElementById("blessBackBtn").style.display = "block";
+                document.getElementById("blessText").innerText = questionData[currentTeacher].bless;
+            } else {
+                // 答错弹窗，返回首页
+                alert("答案错误，请重新答题！");
+                backHome();
+            }
+        }
+
+        // 返回首页
+        function backHome() {
+            document.querySelector(".home-box").style.display = "block";
+            document.querySelector(".question-box").style.display = "none";
+            document.querySelector(".bless-box").style.display = "none";
+            document.getElementById("blessBackBtn").style.display = "none";
+            currentTeacher = "";
+        }
+    </script>
+</body>
+</html>
